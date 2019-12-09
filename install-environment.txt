@@ -1,0 +1,49 @@
+##################################################### Install Mariadb ####################################################################
+yum -y install gmp-devel curl-devel libidn-devel libssh2-devel python-devel openldap-devel vim git net-tools \
+bind-utils gcc make wget memcached libmemcached-devel groupinstall "Development Tools" 
+
+vi /etc/yum.repos.d/MariaDB.repo
+## kemudian di isi berikut #######
+# MariaDB 10.1 CentOS repository list - created 2015-11-30 13:13 UTC
+# http://mariadb.org/mariadb/repositories/
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.1/centos7-amd64
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+
+######### install mariadb ###################
+yum -y install MariaDB-server MariaDB-client MariaDB-devel galera less which socat pwgen rsync 
+yum install MariaDB-server MariaDB-devel MariaDB-client MariaDB-shared MariaDB-backup MariaDB-common galera less which socat pwgen rsync -y
+
+systemctl enable mariadb
+systemctl start mariadb
+mysql_secure_installation
+
+firewall-cmd --permanent --add-service=mysql
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+firewall-cmd --zone=public --add-port=4567/tcp --permanent
+firewall-cmd --zone=public --add-port=4568/tcp --permanent
+firewall-cmd --zone=public --add-port=4444/tcp --permanent
+firewall-cmd --zone=public --add-port=4567/udp --permanent
+firewall-cmd --reload
+
+##################################################### Install http ####################################################################
+yum install httpd
+systemctl enable httpd
+systemctl start httpd
+firewall-cmd --zone=public --add-service=http --permanent
+
+##################################################### Install php7 ####################################################################
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+yum install yum-utils && yum-config-manager --enable remi-php73
+
+yum install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-pdo php-mbstring php-mysql
+yum install php-pear-Auth-SASL php-process php-pecl-igbinary php-devel php-cli php-bcmath php-mcrypt php-common php-tidy \
+php-php-pecl-jsonc php-php-pecl php php-xmlrpc php-pear-Net-Socket
+yum install php-pecl php-jsonc php-pecl-jsonc-devel php-common php-devel php-cli php-runtime -y
+yum install php-gettext php-pecl php-jsonc php-pecl-jsonc-devel  php-runtime -y
+yum install php-pecl-zip
+yum install ccze -y
+systemctl restart httpd
